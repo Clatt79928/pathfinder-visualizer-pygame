@@ -2,6 +2,7 @@ import sys
 from settings import *
 from main_buttons import *
 from bfs import *
+from dfs import*
 from visualize_path import *
 
 pygame.init()
@@ -34,6 +35,12 @@ class App:
         self.dfs_button = Buttons(self,WHITE,558,MAIN_BUTTON_HEIGHT,200,70,'DFS')
         self.astar_button = Buttons(self,WHITE,778,MAIN_BUTTON_HEIGHT,200,70,'A* Search')
         self.dijkstra_button = Buttons(self,WHITE,998,MAIN_BUTTON_HEIGHT,200,70,'Dijkstra Search')
+
+        self.start_end_node_button = Buttons(self,AQUAMARINE, START_END_BUTTON_HEIGHT, GRID_BUTTON_LENGTH, GRID_BUTTON_HEIGHT, 'Start/End Node')
+        self.wall_node_button = Buttons(self,AQUAMARINE, START_END_BUTTON_HEIGHT + GRID_BUTTON_HEIGHT + BUTTON_SPACER, GRID_BUTTON_LENGTH, GRID_BUTTON_HEIGHT, 'Wall Node')
+        self.reset_button = Buttons(self,AQUAMARINE, START_END_BUTTON_HEIGHT + GRID_BUTTON_HEIGHT*2 + BUTTON_SPACER*2, GRID_BUTTON_LENGTH, GRID_BUTTON_HEIGHT, 'Reset')
+        self.start_button = Buttons(self,AQUAMARINE, START_END_BUTTON_HEIGHT + GRID_BUTTON_HEIGHT*3 + BUTTON_SPACER*3, GRID_BUTTON_LENGTH, GRID_BUTTON_HEIGHT, 'Start')
+        self.main_menu_button = Buttons(self,AQUAMARINE, START_END_BUTTON_HEIGHT + GRID_BUTTON_HEIGHT*4 + BUTTON_SPACER*4, GRID_BUTTON_LENGTH, GRID_BUTTON_HEIGHT, 'Main Menu')
 
     def run(self):
         while self.running:
@@ -103,7 +110,7 @@ class App:
         self.wall_node_button.draw_button(STEELBLUE)
         self.reset_button.draw_button(STEELBLUE)
         self.start_button.draw_button(STEELBLUE)
-
+        self.main_menu_button.draw_button(STEELBLUE)
 ##### checks for state when button is clicked and changes button colour when hovered over.
     def grid_window_buttons(self, pos, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -115,8 +122,9 @@ class App:
                 self.execute_reset()
             elif self.start_button.isOver(pos):
                 self.state = 'start visualizing'
-
-        # Get mouse position and check if it is hovering over button
+            elif self.main_menu_button.isOver(pos):
+                self.state = 'main_menu'
+        # et mouse position and check if it is hovering over button
         if event.type == pygame.MOUSEMOTION:
             if self.start_end_node_button.isOver(pos):
                 self.start_end_node_button.colour = MINT
@@ -126,8 +134,10 @@ class App:
                 self.reset_button.colour = MINT
             elif self.start_button.isOver(pos):
                 self.start_button.colour = MINT
+            elif self.main_menu_button.isOver(pos):
+                self.main_menu_button.colour = MINT
             else:
-                self.start_end_node_button.colour, self.wall_node_button.colour, self.reset_button.colour, self.start_button.colour = STEELBLUE, STEELBLUE, STEELBLUE, STEELBLUE
+                self.start_end_node_button.colour, self.wall_node_button.colour, self.reset_button.colour, self.start_button.colour,self.main_menu_button.colour = STEELBLUE, STEELBLUE, STEELBLUE, STEELBLUE, STEELBLUE
 
     def grid_button_keep_colour(self):
         if self.state == 'draw S/E':
@@ -154,6 +164,18 @@ class App:
 
         # Switch States
         self.state = 'grid window'
+    
+    def back_to_main_menu(self):
+        self.start_end_checker = 0
+
+        self.start_node_x = None
+        self.start_node_y = None
+        self.end_node_x = None
+        self.end_node_y = None
+
+        self.wall_pos = wall_nodes_coords_list.copy()
+
+        self.state = 'main_menu'
 
 
     def main_menu_events(self):
@@ -292,24 +314,34 @@ class App:
             self.bfs = BreadthFirst(self.start_node_x, self.start_node_y, self.end_node_x, self.end_node_y, self.wall_pos)
 
             if self.start_node_x or self.end_node_x is not None:
-                while not self.route_found:
-                    self.bfs.bfs_execute()
-                    self.route_found = True
+                self.bfs.bfs_execute()
 
             # make Object for new path
-            self.draw_path = VisualizePath(self.screen, self.start_node_x, self.start_node_y, self.bfs.route)
-            self.draw_path.get_path_coords()
-            self.draw_path.draw_path()
-            pygame.display.update()
-            self.state = 'aftermath'
+            if self.bfs.route_found:
+                self.draw_path = VisualizePath(self.screen, self.start_node_x, self.start_node_y, self.bfs.route)
+                self.draw_path.get_path_coords()
+                self.draw_path.draw_path()
+            else:
+                self.draw_text('No Path Found', self.screen, [768, 384], 50, RED, FONT, centered=True)
 
         elif self.algorithm_state == 'dfs':
+            self.dfs = DepthFirst(self.start_node_x, self.start_node_y, self.end_node_x, self.end_node_y, self.wall_pos)
+            if self.start_node_x or self.end_node_x is not None:
+                self.dfs.dfs_execute()
+            if self.dfs.route_found:
+                self.draw_path = VisualizePath(self.screen, self.start_node_x, self.start_node_y, self.dfs.route)
+                self.draw_path.get_path_coords()
+                self.draw_path.draw_path()
+            else:
+                self.draw_text('No Path Found', self.screen, [768, 384], 50, RED, FONT, centered=True)
+
+        elif self.algorithm_state == 'astar': #implement next
             pass
-        elif self.algorithm_state == 'astar':
-            pass
-        elif self.algorithm_state == 'dijkstra':
+        elif self.algorithm_state == 'dijkstra': #implement next
             pass
 
+        pygame.display.update()
+        self.state = 'aftermath'
 
     def reset_or_main_menu(self):
         self.sketch_grid_buttons()
@@ -330,9 +362,13 @@ class App:
                     self.reset_button.colour = MINT
                 elif self.start_button.isOver(pos):
                     self.start_button.colour = MINT
+                elif self.main_menu_button.isOver(pos):
+                    self.main_menu_button.colour = MINT
                 else:
-                    self.start_end_node_button.colour, self.wall_node_button.colour, self.reset_button.colour, self.start_button.colour = STEELBLUE, STEELBLUE, STEELBLUE, STEELBLUE
+                    self.start_end_node_button.colour, self.wall_node_button.colour, self.reset_button.colour, self.start_button.colour,self.main_menu_button.colour =STEELBLUE, STEELBLUE, STEELBLUE, STEELBLUE, STEELBLUE
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.reset_button.isOver(pos):
                     self.execute_reset()
+                if self.main_menu_button.isOver(pos):
+                    self.back_to_main_menu()

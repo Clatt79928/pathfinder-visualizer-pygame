@@ -10,8 +10,9 @@ class BreadthFirst():
         self.wall_pos = wall_pos
         self.visited = [(self.start_node_x, self.start_node_y)]
         self.route = None
+        self.route_found = False
 
-    
+   
     def draw_all_paths(self, i, j):
         #draw each node the computer is visiting as it is searching simultianlouesly
         pygame.draw.rect(self.app.screen, TAN, (i * 24 + 240, j * 24, 24, 24), 0)
@@ -43,7 +44,7 @@ class BreadthFirst():
         moves_queue = ['']
         first_out = ''
         first_moves = ''
-        while not self.findEnd(first_out):
+        while len(queue) > 0:
             # parent variables of parent nodes at the given time
             first_out = queue.pop(0)
             first_moves= moves_queue.pop(0)
@@ -78,8 +79,13 @@ class BreadthFirst():
                         pygame.draw.line(self.app.screen, ALICE, (GS_X, GS_Y + y * 24),
                                          (GE_X, GS_Y + y * 24))
 
-                    pygame.display.update()
+                    self.draw_all_paths(i, j)
                     queue.append((i, j))
                     moves_queue.append(latest_moves)
 
-        self.route = first_moves
+                if self.findEnd(i,j):
+                    self.route = latest_moves
+                    self.route_found = True
+                    break
+            if self.route_found:
+                break

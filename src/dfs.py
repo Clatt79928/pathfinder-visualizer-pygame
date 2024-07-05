@@ -1,7 +1,7 @@
 
 from settings import *
 
-class BreadthFirst():
+class DepthFirst():
     def __init__(self, start_node_x, start_node_y, end_node_x, end_node_y, wall_pos):
         self.start_node_x = start_node_x
         self.start_node_y = start_node_y
@@ -43,12 +43,14 @@ class BreadthFirst():
         return False
     
     def dfs_execute(self):
-        stack = [(self.start_node_x, self.start_node_y)]
-        moves_stack = ['']
-        last_out = ''
-        last_moves = ''
+        stack = []
+        first_in = (self.start_node_x, self.start_node_y)
+        stack.append(first_in)
+        moves_stack = []
+        moves_first_in = ''
+        moves_stack.append(moves_first_in)
 
-        while not self.findEnd(last_out):
+        while len(stack) > 0:
             #parent variables of parent nodes at the given time
             last_out = stack.pop()
             last_moves = moves_stack.pop()
@@ -64,11 +66,13 @@ class BreadthFirst():
                 elif m == 'D':
                     j += 1
                 latest_moves = last_moves + m
+                if self.findEnd(i,j):
+                    self.route = latest_moves
+                    self.route_found = True
+                    break
                 if self.checkValid((i, j)):
-                    self.draw_all_paths(i, j)
-                    stack.append((i, j))
+                    stack.append((i,j))
                     moves_stack.append(latest_moves)
-
-        self.route = last_moves
-
-        # print('found! The end node is at:', first_out)
+                    self.draw_all_paths(i, j)
+            if self.route_found:
+                break
