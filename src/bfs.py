@@ -10,7 +10,7 @@ class BreadthFirst():
         self.wall_pos = wall_pos
         self.visited = [(self.start_node_x, self.start_node_y)]
         self.route = None
-        #print('hello')
+
     
     def draw_all_paths(self, i, j):
         #draw each node the computer is visiting as it is searching simultianlouesly
@@ -61,4 +61,25 @@ class BreadthFirst():
                     self.draw_all_paths(i, j)
                     queue.append((i, j))
                     moves_queue.append(latest_moves)
+
+                    pygame.draw.rect(self.app.screen, TAN, (i * 24 + 240, j * 24, 24, 24), 0)
+
+                    
+                    pygame.draw.rect(self.app.screen, TOMATO,
+                                     (240 + self.start_node_x * 24, self.start_node_y * 24, 24, 24), 0)
+                    pygame.draw.rect(self.app.screen, ROYALBLUE,
+                                     (240 + self.end_node_x * 24, self.end_node_y * 24, 24, 24), 0)
+
+                    
+                    for x in range(52):
+                        pygame.draw.line(self.app.screen, ALICE, (GS_X + x * 24, GS_Y),
+                                         (GS_X + x * 24, GE_Y))
+                    for y in range(30):
+                        pygame.draw.line(self.app.screen, ALICE, (GS_X, GS_Y + y * 24),
+                                         (GE_X, GS_Y + y * 24))
+
+                    pygame.display.update()
+                    queue.append((i, j))
+                    moves_queue.append(latest_moves)
+
         self.route = first_moves

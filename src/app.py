@@ -1,12 +1,11 @@
-import pygame, sys
+import sys
 from settings import *
 from main_buttons import *
-from bfs_class import *
-from visualize_path_class import *
+from bfs import *
+from visualize_path import *
 
 pygame.init()
 
-best_rout = None
 
 class App:
     def init(self):
@@ -15,6 +14,7 @@ class App:
         self.running = True
         self.state = 'main_menu'
         self.algorithm_state = ''
+        self.grid_square_length = 24 # tThe dimensoions of each grid 
         self.load()
 
         self.start_end_checker = 0  
@@ -30,10 +30,10 @@ class App:
         self.wall_pos = wall_nodes_coords_list.copy()
         # wall nodes list (list already includes the coordinates of the borders)
         
-        self.bfs_button = Buttons(self,WHITE,338,BUTTON_HEIGHT,200,70,'BFS')
-        self.dfs_button = Buttons(self,WHITE,558,BUTTON_HEIGHT,200,70,'DFS')
-        self.astar_button = Buttons(self,WHITE,778,BUTTON_HEIGHT,200,70,'A* Search')
-        self.dijkstra_button = Buttons(self,WHITE,998,BUTTON_HEIGHT,200,70,'Dijkstra Search')
+        self.bfs_button = Buttons(self,WHITE,338,MAIN_BUTTON_HEIGHT,200,70,'BFS')
+        self.dfs_button = Buttons(self,WHITE,558,MAIN_BUTTON_HEIGHT,200,70,'DFS')
+        self.astar_button = Buttons(self,WHITE,778,MAIN_BUTTON_HEIGHT,200,70,'A* Search')
+        self.dijkstra_button = Buttons(self,WHITE,998,MAIN_BUTTON_HEIGHT,200,70,'Dijkstra Search')
 
     def run(self):
         while self.running:
@@ -241,22 +241,19 @@ class App:
                 # then, draw if clicking
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.mouse_drag = 1
-                elif event.type == pygame.MOUSEBUTTONUP:
-                    self.mouse_drag = 0
-
-                if self.mouse_drag == 1:                    
+                   
                     if self.state == 'draw S/E' and self.start_end_checker < 2:
 
                         # choose point color for grid and record the coordinate of start pos
                         if self.start_end_checker == 0:
-                            node_colour = RED
+                            node_colour = TOMATO
                             self.start_node_x = x_grid_pos + 1
                             self.start_node_y = y_grid_pos + 1
                             # print(self.start_node_x, self.start_node_y)
                             self.start_end_checker += 1
 
                         # choose point color for grid and record the coordinate of end pos
-                        elif self.start_end_checker == 1 and x_grid_pos + 1 != self.start_node_x and y_grid_pos + 1 != self.start_node_y:
+                        elif self.start_end_checker == 1 and (x_grid_pos + 1, y_grid_pos +1) != (self.start_node_x, self.start_node_y):
                             node_colour = ROYALBLUE
                             self.end_node_x = x_grid_pos + 1
                             self.end_node_y = y_grid_pos + 1
@@ -268,13 +265,17 @@ class App:
 
                         # draw point on grid
                         pygame.draw.rect(self.screen, node_colour, (264 + x_grid_pos * 24, 24 + y_grid_pos * 24, 24, 24), 0)
-
-                    # draw wall nodes and append wall node coordinates to the wall nodes list
-                    elif self.state == 'draw walls':
-                        pygame.draw.rect(self.screen, BLACK, (264 + x_grid_pos*24, 24 + y_grid_pos*24, 24, 24), 0)
-                        if (x_grid_pos + 1, y_grid_pos + 1) not in self.wall_pos:
+                    
+                    if self.state == 'draw walls':
+                        if(x_grid_pos + 1, y_grid_pos + 1) not in self.wall_pos:
                             self.wall_pos.append((x_grid_pos + 1, y_grid_pos + 1))
-                        # print(len(self.wall_pos))
+
+                            pygame.draw.rect(self.screen, BLACK, (264 + x_grid_pos*24, 24 + y_grid_pos*24, 24, 24), 0)
+                    
+                for x in range(52):
+                    pygame.draw.line(self.screen, ALICE, (GS_X + x * self.grid_square_length, GS_Y),(GS_X + x * self.grid_square_length, GE_Y))
+                for y in range(30):
+                    pygame.draw.line(self.screen, ALICE, (GS_X, GS_Y + y * self.grid_square_length),(GE_X, GS_Y + y * self.grid_square_length))
 
 #visualizing state functions
 

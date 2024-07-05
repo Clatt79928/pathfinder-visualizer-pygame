@@ -1,5 +1,7 @@
 
 import pygame
+
+pygame.init()
 #screen settings
 WIDTH = 1536
 HEIGHT = 768
@@ -28,9 +30,9 @@ ALICE = (240,248,255)
 STEELBLUE = (110,123,139)
 MINT = (189,252,201)
 SPRINGGREEN = (0,255,127)
-RED = (255,0,0)
+TOMATO = (255,99,71)
 ROYALBLUE = (72,118,255)
-
+TAN = (255,165,79)
 #grid settings
 
 #dimensions for grid start
