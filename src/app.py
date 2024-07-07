@@ -1,6 +1,7 @@
 import sys
 from settings import *
 from main_buttons import *
+from astar import *
 from bfs import *
 from dfs import*
 from visualize_path import *
@@ -318,25 +319,32 @@ class App:
 
             # make Object for new path
             if self.bfs.route_found:
-                self.draw_path = VisualizePath(self.screen, self.start_node_x, self.start_node_y, self.bfs.route)
+                self.draw_path = VisualizePath(self.screen, self.start_node_x, self.start_node_y, self.bfs.route,[])
                 self.draw_path.get_path_coords()
                 self.draw_path.draw_path()
             else:
                 self.draw_text('No Path Found', self.screen, [768, 384], 50, RED, FONT, centered=True)
 
         elif self.algorithm_state == 'dfs':
-            self.dfs = DepthFirst(self.start_node_x, self.start_node_y, self.end_node_x, self.end_node_y, self.wall_pos)
+            self.dfs = DepthFirst(self.start_node_x, self.start_node_y, self.end_node_x, self.end_node_y, self.wall_pos,[])
             if self.start_node_x or self.end_node_x is not None:
                 self.dfs.dfs_execute()
             if self.dfs.route_found:
-                self.draw_path = VisualizePath(self.screen, self.start_node_x, self.start_node_y, self.dfs.route)
+                self.draw_path = VisualizePath(self.screen, self.start_node_x, self.start_node_y, self.dfs.route,)
                 self.draw_path.get_path_coords()
                 self.draw_path.draw_path()
             else:
                 self.draw_text('No Path Found', self.screen, [768, 384], 50, RED, FONT, centered=True)
 
         elif self.algorithm_state == 'astar': #implement next
-            pass
+            self.astar = AStar(self, self.start_node_x, self.start_node_y, self.end_node_x, self.end_node_y, self.wall_pos)
+
+            if self.start_node_x or self.end_node_x is not None:
+                self.astar.astar_execute()
+
+            if self.astar.route_found:
+                self.draw_path = VisualizePath(self.screen, self.start_node_x, self.start_node_y, None, self.astar.route)
+                self.draw_path.draw_path()
         elif self.algorithm_state == 'dijkstra': #implement next
             pass
 
