@@ -23,17 +23,6 @@ class AStar():
             self.route_found = False
 
         def draw_all_paths(self, current):
-
-            i, j = current
-
-            pygame.draw.rect(self.app.screen, TAN, (i * 24 + 240, j * 24, 24, 24), 0)
-
-            #redraw start/end nodes on top of all routes
-
-            pygame.draw.rect(self.app.screen, TOMATO, (240 + self.start_node_x * 24, self.start_node_y * 24, 24, 24), 0)
-
-            pygame.draw.rect(self.app.screen, ROYALBLUE, (240 + self.end_node_x * 24, self.end_node_y * 24, 24, 24), 0)
-        def draw_all_paths(self, current):
             i, j = current
 
         

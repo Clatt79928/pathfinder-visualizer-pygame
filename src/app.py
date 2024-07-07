@@ -330,7 +330,7 @@ class App:
             if self.start_node_x or self.end_node_x is not None:
                 self.dfs.dfs_execute()
             if self.dfs.route_found:
-                self.draw_path = VisualizePath(self.screen, self.start_node_x, self.start_node_y, self.dfs.route,)
+                self.draw_path = VisualizePath(self.screen, self.start_node_x, self.start_node_y, self.dfs.route)
                 self.draw_path.get_path_coords()
                 self.draw_path.draw_path()
             else:
