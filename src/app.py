@@ -1,6 +1,7 @@
 import sys
 from settings import *
 from main_buttons import *
+from dijkstra import *
 from astar import *
 from bfs import *
 from dfs import*
@@ -326,11 +327,11 @@ class App:
                 self.draw_text('No Path Found', self.screen, [768, 384], 50, RED, FONT, centered=True)
 
         elif self.algorithm_state == 'dfs':
-            self.dfs = DepthFirst(self.start_node_x, self.start_node_y, self.end_node_x, self.end_node_y, self.wall_pos,[])
+            self.dfs = DepthFirst(self.start_node_x, self.start_node_y, self.end_node_x, self.end_node_y, self.wall_pos)
             if self.start_node_x or self.end_node_x is not None:
                 self.dfs.dfs_execute()
             if self.dfs.route_found:
-                self.draw_path = VisualizePath(self.screen, self.start_node_x, self.start_node_y, self.dfs.route)
+                self.draw_path = VisualizePath(self.screen, self.start_node_x, self.start_node_y, self.dfs.route,[])
                 self.draw_path.get_path_coords()
                 self.draw_path.draw_path()
             else:
@@ -346,7 +347,18 @@ class App:
                 self.draw_path = VisualizePath(self.screen, self.start_node_x, self.start_node_y, None, self.astar.route)
                 self.draw_path.draw_path()
         elif self.algorithm_state == 'dijkstra': #implement next
-            pass
+        
+            self.dijkstra = Dijkstra(self, self.start_node_x, self.start_node_y, self.end_node_x, self.end_node_y, self.wall_pos)
+
+            if self.start_node_x or self.end_node_x is not None:
+                self.dijkstra.dijkstra_execute()
+
+            if self.dijkstra.route_found:
+                self.draw_path = VisualizePath(self.screen, self.start_node_x, self.start_node_y, None, self.dijkstra.route)
+                self.draw_path.draw_path()
+
+            else:
+                self.draw_text('No Path Found', self.screen, [768, 384], 50, RED, FONT, centered=True)
 
         pygame.display.update()
         self.state = 'aftermath'
