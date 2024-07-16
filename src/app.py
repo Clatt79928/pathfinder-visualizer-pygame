@@ -7,6 +7,7 @@ from bfs import *
 from bidirectional import *
 from dfs import*
 from visualize_path import *
+from maze import *
 
 pygame.init()
 
@@ -33,6 +34,9 @@ class App:
 
         self.wall_pos = wall_nodes_coords_list.copy()
         # wall nodes list (list already includes the coordinates of the borders)
+
+        # maze class Instantiation
+        self.maze = Maze(self, self.wall_pos)
         
         self.bfs_button = Buttons(self,WHITE,138,MAIN_BUTTON_HEIGHT,200,70,'BFS')
         self.dfs_button = Buttons(self,WHITE,358,MAIN_BUTTON_HEIGHT,200,70,'DFS')
@@ -45,6 +49,7 @@ class App:
         self.reset_button = Buttons(self,AQUAMARINE, START_END_BUTTON_HEIGHT + GRID_BUTTON_HEIGHT*2 + BUTTON_SPACER*2, GRID_BUTTON_LENGTH, GRID_BUTTON_HEIGHT, 'Reset')
         self.start_button = Buttons(self,AQUAMARINE, START_END_BUTTON_HEIGHT + GRID_BUTTON_HEIGHT*3 + BUTTON_SPACER*3, GRID_BUTTON_LENGTH, GRID_BUTTON_HEIGHT, 'Start')
         self.main_menu_button = Buttons(self,AQUAMARINE, START_END_BUTTON_HEIGHT + GRID_BUTTON_HEIGHT*4 + BUTTON_SPACER*4, GRID_BUTTON_LENGTH, GRID_BUTTON_HEIGHT, 'Main Menu')
+        self.maze_generate_button = Buttons(self, AQUAMARINE, 20, START_END_BUTTON_HEIGHT + GRID_BUTTON_HEIGHT * 5 + BUTTON_SPACER * 5, GRID_BUTTON_LENGTH, GRID_BUTTON_HEIGHT, 'Generate Maze')
 
     def run(self):
         while self.running:
@@ -129,6 +134,10 @@ class App:
                 self.state = 'start visualizing'
             elif self.main_menu_button.isOver(pos):
                 self.state = 'main_menu'
+            elif self.maze_generate_button.isOver(pos):
+                self.state = 'draw walls'
+                self.maze.generateSolid()
+                self.state = 'draw S/E'
         # et mouse position and check if it is hovering over button
         if event.type == pygame.MOUSEMOTION:
             if self.start_end_node_button.isOver(pos):
@@ -141,8 +150,10 @@ class App:
                 self.start_button.colour = MINT
             elif self.main_menu_button.isOver(pos):
                 self.main_menu_button.colour = MINT
+            elif self.maze_generate_button.isOver(pos):
+                self.maze_generate_button.colour = MINT
             else:
-                self.start_end_node_button.colour, self.wall_node_button.colour, self.reset_button.colour, self.start_button.colour,self.main_menu_button.colour = STEELBLUE, STEELBLUE, STEELBLUE, STEELBLUE, STEELBLUE
+                self.start_end_node_button.colour, self.wall_node_button.colour, self.reset_button.colour, self.start_button.colour,self.main_menu_button.colour,self.maze_generate_button.colour = STEELBLUE,STEELBLUE, STEELBLUE, STEELBLUE, STEELBLUE, STEELBLUE
 
     def grid_button_keep_colour(self):
         if self.state == 'draw S/E':
@@ -278,7 +289,7 @@ class App:
                     if self.state == 'draw S/E' and self.start_end_checker < 2:
 
                         # choose point color for grid and record the coordinate of start pos
-                        if self.start_end_checker == 0:
+                        if self.start_end_checker == 0  and (x_grid_pos+1, y_grid_pos+1) not in self.wall_pos:
                             node_colour = TOMATO
                             self.start_node_x = x_grid_pos + 1
                             self.start_node_y = y_grid_pos + 1
@@ -286,7 +297,7 @@ class App:
                             self.start_end_checker += 1
 
                         # choose point color for grid and record the coordinate of end pos
-                        elif self.start_end_checker == 1 and (x_grid_pos + 1, y_grid_pos +1) != (self.start_node_x, self.start_node_y):
+                        elif self.start_end_checker == 1 and (x_grid_pos + 1, y_grid_pos +1) != (self.start_node_x, self.start_node_y) and (x_grid_pos+1, y_grid_pos+1) not in self.wall_pos:
                             node_colour = ROYALBLUE
                             self.end_node_x = x_grid_pos + 1
                             self.end_node_y = y_grid_pos + 1
