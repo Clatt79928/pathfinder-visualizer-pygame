@@ -5,7 +5,7 @@ from dijkstra import *
 from astar import *
 from bfs import *
 from bidirectional import *
-from dfs import*
+from dfs import *
 from visualize_path import *
 from maze import *
 
@@ -13,7 +13,7 @@ pygame.init()
 
 
 class App:
-    def init(self):
+    def __init__(self):
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
         self.running = True
@@ -24,7 +24,7 @@ class App:
 
         self.start_end_checker = 0  
         self.route_found = False
-        set.mouse_drag =0
+        self.mouse_drag = 0
 
         # start and end nodes coordinates
         self.start_node_x = None
@@ -40,9 +40,9 @@ class App:
         
         self.bfs_button = Buttons(self,WHITE,138,MAIN_BUTTON_HEIGHT,200,70,'BFS')
         self.dfs_button = Buttons(self,WHITE,358,MAIN_BUTTON_HEIGHT,200,70,'DFS')
-        self.astar_button = Buttons(self,WHITE,578,MAIN_BUTTON_HEIGHT,200,70,'A* Search')
-        self.dijkstra_button = Buttons(self,WHITE,798,MAIN_BUTTON_HEIGHT,200,70,'Dijkstra Search')
-        self.bidirectional_button = Buttons(self, WHITE, 1018, MAIN_BUTTON_Y_POS, MAIN_BUTTON_LENGTH, MAIN_BUTTON_HEIGHT, 'Bidirectional Search')
+        self.astar_button = Buttons(self,WHITE,578,MAIN_BUTTON_HEIGHT,200,70,'A*')
+        self.dijkstra_button = Buttons(self,WHITE,798,MAIN_BUTTON_HEIGHT,200,70,'Dijkstra')
+        self.bidirectional_button = Buttons(self, WHITE, 1018, MAIN_BUTTON_Y_POS, MAIN_BUTTON_LENGTH, MAIN_BUTTON_HEIGHT, 'Bidirectional')
 
         self.start_end_node_button = Buttons(self,AQUAMARINE, START_END_BUTTON_HEIGHT, GRID_BUTTON_LENGTH, GRID_BUTTON_HEIGHT, 'Start/End Node')
         self.wall_node_button = Buttons(self,AQUAMARINE, START_END_BUTTON_HEIGHT + GRID_BUTTON_HEIGHT + BUTTON_SPACER, GRID_BUTTON_LENGTH, GRID_BUTTON_HEIGHT, 'Wall Node')
@@ -69,7 +69,7 @@ class App:
         sys.exit()
 
     def load(self):
-        self.background = pygame.image.load('background.png')
+        self.background = pygame.image.load('main_background.png')
         self.grid_background = pygame.image.load('grid_logo.png')
 
     #draw text
@@ -198,7 +198,7 @@ class App:
         pygame.display.update()
 
         self.sketch_main_menu()
-        self.draw_text('Made By: Kevin Zhuang', self.screen, [1200, 720], 28, WHITE, FONT, centered=False)
+        self.draw_text('Made By: Kevin Z.', self.screen, [1200, 720], 28, WHITE, FONT, centered=False)
 
         #check if game is running
         for event in pygame.event.get():
